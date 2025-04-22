@@ -1,4 +1,4 @@
-(ns root
+(ns foo
   (:require
    [integrant.core :as ig]
    [taoensso.timbre :as log]

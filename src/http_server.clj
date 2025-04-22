@@ -5,12 +5,22 @@
    [reitit.ring :as ring]
    [ring.middleware.defaults
     :refer [wrap-defaults api-defaults]]
+   [reitit.ring.middleware.parameters :as params]
    [taoensso.timbre :as log]
-   [ring.util.response :as response]))
+   [ring.util.response :as response]
+   [clojure.java.io :as io]))
+
+(defn index-page [_]
+  (-> (io/resource "public/index.html")
+      (slurp)
+      (response/response)
+      (response/content-type "text/html")))
 
 (defmethod ig/init-key ::route-handler [_ routes]
   (ring/ring-handler
-   (ring/router routes)))
+   (ring/router routes)
+   (constantly (index-page nil)) ;; fallback
+    {:middleware [params/parameters-middleware]}))
 
 (defmethod response/resource-data :resource
   [^java.net.URL url]
