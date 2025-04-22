@@ -1,3 +1,4 @@
-{:http-server/handler nil 
+{:root/handler nil
+ :http-server/route-handler [["/" {:get #ig/ref :root/handler}]]
  :http-server/server {:port #or [#env "HTTP_PORT" 8085]
-                      :handler #ig/ref :http-server/handler}}
+                      :route-handler #ig/ref :http-server/route-handler}}
