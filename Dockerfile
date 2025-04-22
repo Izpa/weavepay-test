@@ -2,7 +2,6 @@ FROM openjdk:11
 
 WORKDIR /
 
-COPY target/cljot.jar cljot.jar
-EXPOSE 3000
+COPY target/app.jar app.jar
 
-CMD java -jar cljot.jar
+CMD ["java", "-jar", "app.jar"]

@@ -11,7 +11,7 @@
   (b/delete {:path "target"}))
 
 (def class-dir "target/classes")
-(def uber-file "target/weavypay-test.jar")
+(def uber-file "target/app.jar")
 
 (defn uber
   [{:keys [version]

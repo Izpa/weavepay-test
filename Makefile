@@ -32,7 +32,7 @@ build-uberjar:
 
 .PHONY: run-uberjar
 run-uberjar:
-	java -jar target/${APP_NAME}.jar
+	java -jar target/app.jar
 
 .PHONY: build-docker
 build-docker:
@@ -40,7 +40,11 @@ build-docker:
 
 .PHONY: run-docker
 run-docker:
-	docker run -p ${SERVER_PORT}:${SERVER_PORT} --name ${APP_NAME} -d clot
+	docker run -p ${SERVER_PORT}:${SERVER_PORT} --name ${APP_NAME} -d ${APP_NAME}
+
+.PHONY: stop-docker
+stop-docker:
+	docker stop ${APP_NAME} && docker rm ${APP_NAME}
 
 .PHONY: run-dev
 run-dev:
