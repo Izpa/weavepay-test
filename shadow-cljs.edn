@@ -1,0 +1,13 @@
+{:source-paths ["src/cljs"]
+
+ :deps true
+
+ :js-options {:resolve {"process" {:target :npm :require "process"}}}
+
+ :builds
+ {:app
+  {:target :browser
+   :output-dir "resources/public/js"
+   :asset-path "/js"
+   :modules {:main {:init-fn core/init}}
+   :devtools {:after-load core/mount}}}}

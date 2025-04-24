@@ -20,3 +20,4 @@ resources/public/js
 .shadow-cljs
 .vscode
 .DS_Store
+node_modules

@@ -1,0 +1,29 @@
+{
+  "name": "weavepay-test",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Izpa/weavepay-test.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Izpa/weavepay-test/issues"
+  },
+  "homepage": "https://github.com/Izpa/weavepay-test#readme",
+  "devDependencies": {
+    "shadow-cljs": "^3.0.1"
+  },
+  "dependencies": {
+    "process": "^0.11.10",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  }
+}
