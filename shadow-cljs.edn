@@ -1,6 +1,4 @@
-{:source-paths ["src/cljs"]
-
- :deps true
+{:deps true
 
  :js-options {:resolve {"process" {:target :npm :require "process"}}}
 

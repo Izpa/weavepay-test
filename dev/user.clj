@@ -45,6 +45,10 @@
 (defn cljs! []
   (shadow/nrepl-select :app))
 
+(defn stop-shadow! []
+  (shadow/stop-worker :app)
+  (server/stop!))
+
 (comment
   (start-system!)
 
@@ -52,8 +56,8 @@
 
   (cljs!)
 
-  (js/alert "Hi from REPL!")
-  
   (stop-system!) ;;stop watch
+
+  (stop-shadow!)
 
   (igr/halt))

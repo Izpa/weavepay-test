@@ -21,9 +21,7 @@
                 refactor-nrepl/refactor-nrepl {:mvn/version "3.9.0"}
                 thheller/shadow-cljs {:mvn/version "2.25.2"}}
    :main-opts ["-m" "nrepl.cmdline"
-               "--middleware" "[shadow.cljs.devtools.server.nrepl/middleware
-                                cider.nrepl/cider-middleware
-                                refactor-nrepl.middleware/wrap-refactor]"]}
+               "--middleware" "[shadow.cljs.devtools.server.nrepl/middleware cider.nrepl/cider-middleware refactor-nrepl.middleware/wrap-refactor]"]}
   
   :reveal-nrepl-middleware
   {:extra-deps {vlaaad/reveal {:mvn/version "1.3.280"}}
