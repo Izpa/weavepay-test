@@ -4,23 +4,29 @@
             [taoensso.timbre :as log]
             [integrant.core :as ig]))
 
+(defn select-fields [entry]
+  (select-keys entry
+               [:prism:publicationName
+                :prism:coverDate
+                :dc:creator
+                :prism:doi]))
+
 (defmethod ig/init-key ::search-keyword [_ {:keys [base-url api-key]}]
-  (fn [keyword]
-    (log/info "Search in scopus: " keyword)
+  (fn [kwd]
+    (log/info "Search in scopus: " kwd)
     (let [{:keys [status body] :as response}
           (http/get base-url
-                    {:headers {"Accept" "application/json"
-                               "User-Agent" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
-                               "Referer" "https://www.scopus.com"}
+                    {:headers {"Accept" "application/json"}
                      :query-params {:apiKey api-key
                                     :count 10
                                     :httpaccept "application/json"
-                                    :query keyword}})]
+                                    :query kwd}})]
       (log/info "Scopus resonse: " response)
       (when (= status 200)
         (-> body
             (json/parse-string true)
-            (get-in [:search-results :entry]))))))
+            (get-in [:search-results :entry])
+            (->> (mapv select-fields)))))))
 
 (defmethod ig/init-key ::search-multiple [_ {:keys [search-keyword]}]
   (fn [keywords]
