@@ -12,6 +12,7 @@
  (fn [_ _]
    {:keywords [""]
     :find-results nil
+    :find-loading? false
     :articles-list nil
     :articles-total 0
     :articles-filter ""
@@ -30,10 +31,12 @@
                     (filter #(not (str/blank? %)))
                     (map #(str "word=" (js/encodeURIComponent %)))
                     (str/join "&"))]
-     {:http-xhrio {:method :get
+     {:db (assoc db :find-loading? true)
+      :http-xhrio {:method :get
                    :uri (str "/find?" words)
                    :response-format (ajax.core/json-response-format {:keywords? true})
-                   :on-success [:find-success]}})))
+                   :on-success [:find-success]
+                   :on-failure [:find-failure]}})))
 
 (rf/reg-event-db
  :find-success
@@ -46,10 +49,15 @@
                       :doi (:doi a)})
          new (mapv normalize (:new result))
          existed (mapv normalize (:existed result))]
-     (assoc db :find-results {:new new :existed existed}))))
+     (-> db
+         (assoc :find-results {:new new :existed existed})
+         (assoc :find-loading? false)))))
+
+(rf/reg-event-db :find-failure (fn [db _] (assoc db :find-loading? false)))
 
 (rf/reg-sub :keywords (fn [db _] (:keywords db)))
 (rf/reg-sub :find-results (fn [db _] (:find-results db)))
+(rf/reg-sub :find-loading? (fn [db _] (:find-loading? db)))
 (rf/reg-sub :articles-list (fn [db _] (:articles-list db)))
 (rf/reg-sub :articles-total (fn [db _] (:articles-total db)))
 (rf/reg-sub :articles-filter (fn [db _] (:articles-filter db)))
@@ -153,6 +161,9 @@
      [:button {:on-click #(rf/dispatch [:add-keyword])} "+"]
      [:button {:on-click #(rf/dispatch [:do-find])} "Find"]]))
 
+(defn spinner []
+  [:div.spinner])
+
 (defn result-table [articles]
   [:table
    [:thead
@@ -164,8 +175,10 @@
        [:td publication_name] [:td cover_date] [:td creator] [:td doi]])]])
 
 (defn result-section []
-  (let [{:keys [new existed]} @(rf/subscribe [:find-results])]
+  (let [loading? @(rf/subscribe [:find-loading?])
+        {:keys [new existed]} @(rf/subscribe [:find-results])]
     [:div
+     (when loading? [spinner])
      (when (seq new)
        [:details
         [:summary (str "New articles (" (count new) ")")]
@@ -178,7 +191,7 @@
 (defn article-table [articles]
   [:table
    [:thead
-    [:tr [:th "Publcation"] [:th "Author"] [:th "Date"] [:th "DOI"]]]
+    [:tr [:th "Publication"] [:th "Author"] [:th "Date"] [:th "DOI"]]]
    [:tbody
     (for [{:keys [title author date doi]} articles]
       ^{:key doi}
