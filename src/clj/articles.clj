@@ -1,12 +1,11 @@
 (ns articles
   (:require
-    [clojure.set :as s]
-    [clojure.string :as str]
-    [integrant.core :as ig]
-    [malli.core :as m]
-    [schema :as schema]
-    [taoensso.timbre :as log]))
-
+   [clojure.set :as s]
+   [clojure.string :as str]
+   [integrant.core :as ig]
+   [malli.core :as m]
+   [schema :as schema]
+   [taoensso.timbre :as log]))
 
 (defmethod ig/init-key ::insert! [_ {:keys [execute!]}]
   (fn [entries]

@@ -1,12 +1,10 @@
 (ns find.result-section
   (:require
-    [re-frame.core :as rf]))
-
+   [re-frame.core :as rf]))
 
 (defn spinner
   []
   [:div.spinner])
-
 
 (defn result-table
   [articles]
@@ -16,7 +14,6 @@
     (for [{:articles/keys [publication_name cover_date creator doi]} articles]
       ^{:key (or doi publication_name)}
       [:tr [:td publication_name] [:td cover_date] [:td creator] [:td doi]])]])
-
 
 (defn result-section
   []

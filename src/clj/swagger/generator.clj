@@ -1,16 +1,16 @@
 (ns swagger.generator
   (:require
-    [integrant.core :as ig]
-    [schema]
-    [reitit.ring :as ring]
-    [reitit.coercion.malli]
-    [reitit.ring.coercion :as coercion]
-    [reitit.ring.middleware.parameters :as parameters]
-    [reitit.ring.middleware.muuntaja :as muuntaja-mw]
-    [muuntaja.core :as muuntaja]
-    [reitit.swagger :as swagger]
-    [aero.core :as aero]
-    [clojure.java.io :as io]))
+   [aero.core :as aero]
+   [clojure.java.io :as io]
+   [integrant.core :as ig]
+   [muuntaja.core :as muuntaja]
+   [reitit.coercion.malli]
+   [reitit.ring :as ring]
+   [reitit.ring.coercion :as coercion]
+   [reitit.ring.middleware.muuntaja :as muuntaja-mw]
+   [reitit.ring.middleware.parameters :as parameters]
+   [reitit.swagger :as swagger]
+   [schema]))
 
 (defmethod aero/reader 'ig/ref [_ _ value]
   (ig/ref value))
@@ -33,11 +33,12 @@
         handler (swagger/create-swagger-handler)
         response (handler {:request-method :get
                            :uri "/swagger.json"
-                           :reitit.core/router router})] ;; вот ключевой момент!
+                           :reitit.core/router router})] ; вот ключевой момент!
     (spit "swagger.json" (:body response))
     (println "✅ swagger.json written.")))
 
-(defn -main []
+(defn -main
+  []
   (let [profile (or (some-> (System/getenv "PROFILE") keyword) :default)
         config (-> "config.edn"
                    io/resource

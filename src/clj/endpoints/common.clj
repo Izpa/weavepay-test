@@ -1,8 +1,7 @@
 (ns endpoints.common
   (:require
-    [ring.util.response :as response]
-    [schema :as schema]))
-
+   [ring.util.response :as response]
+   [schema :as schema]))
 
 (defn handle-with-validation
   [data schema f]

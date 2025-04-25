@@ -1,21 +1,21 @@
 (ns http-server
   (:require
-    [clojure.java.io :as io]
-    [integrant.core :as ig]
-    [malli.core :as m]
-    [muuntaja.core :as muuntaja]
-    [org.httpkit.server :as hk-server]
-    [reitit.coercion.malli :as malli-coercion]
-    [reitit.ring :as ring]
-    [reitit.ring.coercion :as coercion]
-    [reitit.ring.middleware.muuntaja :as muuntaja-mw]
-    [reitit.ring.middleware.parameters :as params]
-    [reitit.swagger :as swagger]
-    [reitit.swagger-ui :as swagger-ui]
-    [ring.middleware.defaults :refer [wrap-defaults api-defaults]]
-    [ring.util.response :as response]
-    [schema :as schema]
-    [taoensso.timbre :as log]))
+   [clojure.java.io :as io]
+   [integrant.core :as ig]
+   [malli.core :as m]
+   [muuntaja.core :as muuntaja]
+   [org.httpkit.server :as hk-server]
+   [reitit.coercion.malli :as malli-coercion]
+   [reitit.ring :as ring]
+   [reitit.ring.coercion :as coercion]
+   [reitit.ring.middleware.muuntaja :as muuntaja-mw]
+   [reitit.ring.middleware.parameters :as params]
+   [reitit.swagger :as swagger]
+   [reitit.swagger-ui :as swagger-ui]
+   [ring.middleware.defaults :refer [wrap-defaults api-defaults]]
+   [ring.util.response :as response]
+   [schema :as schema]
+   [taoensso.timbre :as log]))
 
 (defn index-page
   [_]
@@ -36,16 +36,16 @@
 (defmethod ig/init-key ::route-handler [_ routes]
   (let [all-routes (concat routes swagger-routes)]
     (ring/ring-handler
-      (ring/router all-routes
-                   {:data {:coercion malli-coercion/coercion
-                           :muuntaja muuntaja/instance
-                           :middleware [params/parameters-middleware
-                                        muuntaja-mw/format-negotiate-middleware
-                                        muuntaja-mw/format-response-middleware
-                                        muuntaja-mw/format-request-middleware
-                                        coercion/coerce-request-middleware
-                                        coercion/coerce-response-middleware]}})
-      (constantly (index-page nil)))))
+     (ring/router all-routes
+                  {:data {:coercion malli-coercion/coercion
+                          :muuntaja muuntaja/instance
+                          :middleware [params/parameters-middleware
+                                       muuntaja-mw/format-negotiate-middleware
+                                       muuntaja-mw/format-response-middleware
+                                       muuntaja-mw/format-request-middleware
+                                       coercion/coerce-request-middleware
+                                       coercion/coerce-response-middleware]}})
+     (constantly (index-page nil)))))
 
 (defmethod response/resource-data :resource
   [^java.net.URL url]
@@ -61,8 +61,8 @@
     (throw (ex-info "Invalid server config" {:errors (m/explain schema/server-config config)})))
   (log/info "Start http-server on port" port)
   (hk-server/run-server
-    (wrap-defaults route-handler (assoc api-defaults :static {:resources "public"}))
-    {:port port}))
+   (wrap-defaults route-handler (assoc api-defaults :static {:resources "public"}))
+   {:port port}))
 
 (defmethod ig/halt-key! ::server [_ server]
   (log/info "Stopping server" server)

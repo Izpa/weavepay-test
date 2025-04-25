@@ -1,7 +1,6 @@
 (ns articles.ui
   (:require
-    [re-frame.core :as rf]))
-
+   [re-frame.core :as rf]))
 
 (defn pagination-controls
   []
@@ -27,7 +26,6 @@
      [:button {:disabled (= current-page max-page)
                :on-click #(rf/dispatch [:change-page max-page])} ">>"]]))
 
-
 (defn article-table
   [articles]
   [:table
@@ -36,7 +34,6 @@
     (for [{:keys [title author date doi]} articles]
       ^{:key doi}
       [:tr [:td title] [:td author] [:td date] [:td doi]])]])
-
 
 (defn article-section
   []

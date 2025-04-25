@@ -1,7 +1,6 @@
 (ns find.keywords-input
   (:require
-    [re-frame.core :as rf]))
-
+   [re-frame.core :as rf]))
 
 (defn keywords-input
   []

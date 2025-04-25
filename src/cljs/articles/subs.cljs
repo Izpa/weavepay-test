@@ -1,7 +1,6 @@
 (ns articles.subs
   (:require
-    [re-frame.core :as rf]))
-
+   [re-frame.core :as rf]))
 
 (rf/reg-sub :articles-error (fn [db _] (:articles-error db)))
 (rf/reg-sub :articles-list (fn [db _] (:articles-list db)))

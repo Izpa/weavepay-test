@@ -71,11 +71,6 @@
    :main-opts ["-m" "kaocha.runner"
                "--plugin" "cloverage"]}
 
-  :common-test
-  {:extra-deps {org.hsqldb/hsqldb {:mvn/version "2.7.2"} ; bulk-db
-                clj-test-containers/clj-test-containers {:mvn/version "0.7.4"}}
-   :extra-paths ["test/common" "test_resources"]}
-
   :unit-test
   {:extra-paths ["test/unit"]}
 

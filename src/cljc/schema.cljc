@@ -1,10 +1,8 @@
 (ns schema
   (:require
-   [malli.core :as m]
-   [malli.error :as me]
-   [malli.registry :as mr]
    [integrant.core :as ig]
-   [clojure.string :as str]))
+   [malli.core :as m]
+   [malli.error :as me]))
 
 (defn validate
   [schema data]

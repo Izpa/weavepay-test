@@ -1,22 +1,22 @@
 .PHONY: unit-test
 unit-test:
-	clojure -M:run-test:unit-test:common-test unit-test
+	clojure -M:run-test:unit-test unit-test
 
 .PHONY: integration-test
 integration-test:
-	clojure -M:run-test:integration-test:common-test integration
+	clojure -M:run-test:integration-test integration
 
 .PHONY: kibit
 kibit:
-	clojure -M:common-test:unit-test:integration-test:kibit --paths src,test
+	clojure -M:unit-test:integration-test:kibit --paths src,test
 
 .PHONY: kondo
 kondo:
-	clojure -M:common-test:unit-test:integration-test:kondo --lint src test --paralell --cache false
+	clojure -M:unit-test:integration-test:kondo --lint src test --paralell --cache false
 
 .PHONY: eastwood
 eastwood:
-	clojure -M:common-test:unit-test:integration-test:eastwood
+	clojure -M:unit-test:integration-test:eastwood
 
 .PHONY: cljstyle-check
 cljstyle-check:
@@ -48,7 +48,7 @@ stop-docker:
 
 .PHONY: run-dev
 run-dev:
-	clj -A:dev:common-test:unit-test:integration-test -X user/run-system!
+	clj -A:dev:unit-test:integration-test -X user/run-system!
 
 .PHONY: run-system
 run-system:

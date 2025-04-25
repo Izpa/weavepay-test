@@ -1,7 +1,6 @@
 (ns taoensso.encore
   (:require
-    [clj-kondo.hooks-api :as hooks]))
-
+   [clj-kondo.hooks-api :as hooks]))
 
 (defn defalias
   [{:keys [node]}]
@@ -12,7 +11,7 @@
               (symbol (name (hooks/sexpr src))))]
     {:node (with-meta
              (hooks/list-node
-               [(hooks/token-node 'def)
-                (hooks/token-node (hooks/sexpr sym))
-                (hooks/token-node (hooks/sexpr src))])
+              [(hooks/token-node 'def)
+               (hooks/token-node (hooks/sexpr sym))
+               (hooks/token-node (hooks/sexpr src))])
              (meta src))}))

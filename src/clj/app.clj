@@ -1,8 +1,7 @@
 (ns app
   (:gen-class)
   (:require
-    [config :refer [init!]]))
-
+   [config :refer [init!]]))
 
 (defn -main
   "Main java entrypoint into Cljot."
