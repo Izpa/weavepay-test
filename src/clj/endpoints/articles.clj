@@ -2,6 +2,7 @@
   (:require
    [integrant.core :as ig]
    [taoensso.timbre :as log]
+   [cheshire.core :as json]
    [ring.util.response :as response]))
 
 (defmethod ig/init-key ::handler [_ {:keys [search]}]
@@ -9,6 +10,7 @@
     (log/info "Receive http: " request)
     (-> {:filter filter :q q :offset offset :limit limit}
         search
+        (json/generate-string)
         (response/response)
-        (response/header "content-type" "text/html"))))
+        (response/header "content-type" "application/json"))))
 

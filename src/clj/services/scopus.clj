@@ -30,7 +30,6 @@
 
 (defmethod ig/init-key ::search-multiple [_ {:keys [search-keyword]}]
   (fn [keywords]
-    (reduce (fn [acc kw]
-              (assoc acc kw (search-keyword kw)))
-            {}
-            keywords)))
+    (->> keywords
+         (mapv search-keyword)
+         (apply concat))))

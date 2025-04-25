@@ -1,25 +1,20 @@
 (ns articles
   (:require [integrant.core :as ig]
-            [taoensso.timbre :as log]))
+            [clojure.string :as str]
+            [taoensso.timbre :as log]
+            [clojure.set :as s]))
 
 (defmethod ig/init-key ::insert! [_ {:keys [execute!]}]
   (fn [entries]
+    (log/info "Entires: " entries)
     (let [all-articles
-          (mapcat (fn [[kwd publications]]
-                    (map (fn [{:keys [prism:publicationName
-                                      prism:coverDate
-                                      dc:creator
-                                      prism:doi]}]
-                           {:keyword kwd
-                            :publication_name prism:publicationName
-                            :cover_date prism:coverDate
-                            :creator dc:creator
-                            :doi prism:doi})
-                         publications))
-                  entries)
-          dois (mapv :doi all-articles)
+          (map #(s/rename-keys % {:prism:publicationName :publication_name
+                                  :prism:coverDate       :cover_date
+                                  :dc:creator            :creator
+                                  :prism:doi             :doi})
+               entries)
 
-          _ (log/info "ALL-DOIS: " dois)
+          dois (mapv :doi all-articles)
 
           existing-dois
           (->> {:select [:doi]
@@ -28,8 +23,6 @@
                execute!
                (mapv ::doi)
                set)
-
-          _ (log/info "existing-dois: " existing-dois)
 
           [new-articles existed-articles]
           (reduce (fn [[new exist] article]
@@ -53,11 +46,10 @@
     (let [base {:select [:publication_name :creator :cover_date :doi]
                 :from [:articles]
                 :where (cond-> []
-                         q [:or
-                            [:ilike :publication_name (str "%" q "%")]
-                            [:ilike :keyword (str "%" q "%")]
-                            [:ilike :creator (str "%" q "%")]
-                            [:ilike :doi (str "%" q "%")]])
+                         q (conj [:or
+                                  [:like [:lower :publication_name] (str "%" (str/lower-case q) "%")]
+                                  [:like [:lower :creator] (str "%" (str/lower-case q) "%")]
+                                  [:like [:lower :doi] (str "%" (str/lower-case q) "%")]]))
                 :limit (or limit 20)
                 :offset (or offset 0)}]
       {:articles (execute! base)

@@ -28,6 +28,6 @@
 (defmethod ig/init-key ::execute-honey! [_ {:keys [execute!]}]
   (fn [query-map]
     (log/info "Query map: " query-map)
-    (-> query-map
-        sql/format
-        execute!)))
+    (->> query-map
+         sql/format
+         execute!)))

@@ -4,24 +4,13 @@
    [reagent.core :as r]
    [reagent.dom.client :as rdom]
    [ajax.core :refer [GET]]
-   [day8.re-frame.http-fx])
-  (:require-macros [cljs.core.async.macros :refer [go]]))
+   [day8.re-frame.http-fx]
+   [clojure.string :as str]))
 
-;; --- DB ---
+;; Event handlers
 (rf/reg-event-db
  :initialize
- (fn [_ _]
-   {:keywords [""],
-    :find-result nil,
-    :article-query {:q "" :limit 10 :offset 0},
-    :article-result {:articles [] :total 0}}))
-
-;; --- FIND ---
-
-(rf/reg-event-db
- :update-keyword
- (fn [db [_ idx value]]
-   (assoc-in db [:keywords idx] value)))
+ (fn [_ _] {:keywords [""], :find-results nil, :filter "", :page 1, :per-page 10, :articles nil}))
 
 (rf/reg-event-db
  :add-keyword
@@ -33,126 +22,148 @@
  (fn [db [_ idx]]
    (update db :keywords #(vec (concat (subvec % 0 idx) (subvec % (inc idx)))))))
 
+(rf/reg-event-db
+ :update-keyword
+ (fn [db [_ idx val]]
+   (assoc-in db [:keywords idx] val)))
+
 (rf/reg-event-fx
  :do-find
  (fn [{:keys [db]} _]
-   {:http-xhrio {:method :get
-                 :uri (str "/find?" (->> (:keywords db)
-                                           (remove empty?)
-                                           (map #(str "word=" %))
-                                           (interpose "&")
-                                           (apply str)))
-                 :response-format (ajax.core/json-response-format {:keywords? true})
-                 :on-success [:find-success]}}))
+   (let [words (get db :keywords)
+         query-params (->> words
+                           (filter #(not (str/blank? %)))
+                           (map #(str "word=" (js/encodeURIComponent %)))
+                           (str/join "&"))]
+     {:http-xhrio {:method :get
+                   :uri (str "/find?" query-params)
+                   :response-format (ajax.core/json-response-format {:keywords? true})
+                   :on-success [:find-success]}})))
 
 (rf/reg-event-db
  :find-success
- (fn [db [_ data]]
-   (assoc db :find-result data)))
-
-;; --- ARTICLES ---
+ (fn [db [_ result]]
+   (assoc db :find-results {:new (get result 0) :existed (get result 1)})))
 
 (rf/reg-event-db
- :set-article-query
- (fn [db [_ k v]]
-   (assoc-in db [:article-query k] v)))
+ :update-filter
+ (fn [db [_ val]]
+   (assoc db :filter val)))
+
+(rf/reg-event-db
+ :update-page
+ (fn [db [_ page]]
+   (assoc db :page page)))
+
+(rf/reg-event-db
+ :update-per-page
+ (fn [db [_ val]]
+   (assoc db :per-page val)))
 
 (rf/reg-event-fx
  :fetch-articles
  (fn [{:keys [db]} _]
-   {:http-xhrio {:method :get
-                 :uri "/articles"
-                 :params (:article-query db)
-                 :response-format (ajax.core/json-response-format {:keywords? true})
-                 :on-success [:articles-success]}}))
+   (let [q (get db :filter)
+         page (get db :page)
+         per-page (get db :per-page)]
+     {:http-xhrio {:method :get
+                   :uri (str "/articles?q=" (js/encodeURIComponent q) "&page=" page "&per_page=" per-page)
+                   :response-format (ajax.core/json-response-format {:keywords? true})
+                   :on-success [:articles-success]}})))
 
 (rf/reg-event-db
  :articles-success
  (fn [db [_ result]]
-   (assoc db :article-result result)))
+   (assoc db :articles result)))
 
-;; --- SUBS ---
+(rf/reg-sub
+ :keywords (fn [db _] (:keywords db)))
+(rf/reg-sub
+ :find-results (fn [db _] (:find-results db)))
+(rf/reg-sub
+ :filter (fn [db _] (:filter db)))
+(rf/reg-sub
+ :page (fn [db _] (:page db)))
+(rf/reg-sub
+ :per-page (fn [db _] (:per-page db)))
+(rf/reg-sub
+ :articles (fn [db _] (:articles db)))
 
-(rf/reg-sub :keywords (fn [db _] (:keywords db)))
-(rf/reg-sub :find-result (fn [db _] (:find-result db)))
-(rf/reg-sub :article-query (fn [db _] (:article-query db)))
-(rf/reg-sub :article-result (fn [db _] (:article-result db)))
-
-;; --- UI ---
-
+;; UI
 (defn keywords-input []
   (let [ks @(rf/subscribe [:keywords])]
     [:div
-     (into [:div]
-           (map-indexed
-            (fn [i k]
-              [:div {:key i}
-               [:input {:type "text"
-                        :value k
-                        :on-change #(rf/dispatch [:update-keyword i (.. % -target -value)])}]
-               (when (> (count ks) 1)
-                 [:button {:on-click #(rf/dispatch [:remove-keyword i])} "-"])]
-              )
-            ks)) ; <-- закрытие map-indexed
+     (for [[i k] (map-indexed vector ks)]
+       ^{:key i}
+       [:div
+        [:input {:type "text" :value k :on-change #(rf/dispatch [:update-keyword i (.. % -target -value)])}]
+        (when (> (count ks) 1)
+          [:button {:on-click #(rf/dispatch [:remove-keyword i])} "-"])])
      [:button {:on-click #(rf/dispatch [:add-keyword])} "+"]
      [:button {:on-click #(rf/dispatch [:do-find])} "Find"]]))
 
 (defn result-table [articles]
   [:table
    [:thead
+    [:tr [:th "Keyword"] [:th "Publication"] [:th "Date"] [:th "Author"] [:th "DOI"]]]
+   [:tbody
+    (for [{:keys [keyword publication_name cover_date creator doi]} articles]
+      ^{:key doi}
+      [:tr
+       [:td keyword] [:td publication_name] [:td cover_date] [:td creator] [:td doi]])]])
+
+(defn result-section []
+  (let [{:keys [new existed]} @(rf/subscribe [:find-results])]
+    [:div
+     (when new
+       [:details {:open true}
+        [:summary (str "New articles (" (count new) ")")]
+        [result-table new]])
+     (when existed
+       [:details {:open false}
+        [:summary (str "Existed articles (" (count existed) ")")]
+        [result-table existed]])]))
+
+(defn article-table [articles]
+  [:table
+   [:thead
     [:tr [:th "Title"] [:th "Author"] [:th "Date"] [:th "DOI"]]]
    [:tbody
-    (for [{:keys [title author date doi]} articles]
-      [:tr {:key doi}
-       [:td title] [:td author] [:td date] [:td doi]])]])
+    (for [{:keys [title author date doi]} (:articles articles)]
+      ^{:key doi}
+      [:tr [:td title] [:td author] [:td date] [:td doi]])]])
 
-(defn find-results []
-  (let [{:keys [new existed]} @(rf/subscribe [:find-result])]
+(defn article-section []
+  (let [f @(rf/subscribe [:filter])
+        p @(rf/subscribe [:page])
+        per @(rf/subscribe [:per-page])
+        articles @(rf/subscribe [:articles])
+        total (:total articles)]
     [:div
-     [:details
-      [:summary (str "New Articles (" (count new) ")")]
-      [result-table new]]
-     [:details
-      [:summary (str "Existed Articles (" (count existed) ")")]
-      [result-table existed]]]))
-
-(defn article-controls []
-  (let [{:keys [q limit offset]} @(rf/subscribe [:article-query])
-        {:keys [total]} @(rf/subscribe [:article-result])
-        page (quot offset limit)
-        pages (int (Math/ceil (/ total limit)))]
-    [:div
-     [:input {:placeholder "Search..."
-              :value q
-              :on-change #(rf/dispatch [:set-article-query :q (.. % -target -value)])}]
-     [:input {:type "number"
-              :min 1
-              :value limit
-              :on-change #(rf/dispatch [:set-article-query :limit (js/parseInt (.. % -target -value))])}]
-     [:button {:on-click #(rf/dispatch [:set-article-query :offset 0])} "<<"]
-     [:button {:on-click #(rf/dispatch [:set-article-query :offset (max 0 (- offset limit))])} "<"]
-     (for [i (range pages)]
-       [:button {:key i
-                 :on-click #(rf/dispatch [:set-article-query :offset (* i limit)])} (inc i)])
-     [:button {:on-click #(rf/dispatch [:set-article-query :offset (min (* (dec pages) limit) (+ offset limit))])} ">"]
-     [:button {:on-click #(rf/dispatch [:set-article-query :offset (* (dec pages) limit)])} ">>"]
-     [:button {:on-click #(rf/dispatch [:fetch-articles])} "Search"]]))
-
-(defn article-list []
-  (let [{:keys [articles]} @(rf/subscribe [:article-result])]
-    [result-table articles]))
+     [:div
+      [:label "Filter: "]
+      [:input {:type "text" :value f :on-change #(rf/dispatch [:update-filter (.. % -target -value)])}]
+      [:label " Per page: "]
+      [:input {:type "number" :value per :on-change #(rf/dispatch [:update-per-page (int (.. % -target -value))])}]
+      [:button {:on-click #(rf/dispatch [:fetch-articles])} "Apply"]]
+     (cond
+       (nil? articles) [:p "Loading..."]
+       (empty? (:articles articles)) [:p "No articles in db"]
+       :else [article-table articles])
+     (when total
+       [:div
+        [:button {:on-click #(rf/dispatch [:update-page 1])} "<<"]
+        [:button {:on-click #(rf/dispatch [:update-page (dec p)])} "<"]
+        [:span (str " Page " p " ")]
+        [:button {:on-click #(rf/dispatch [:update-page (inc p)])} ">"]
+        [:button {:on-click #(rf/dispatch [:update-page (int (Math/ceil (/ total per)))])} ">>"]])]))
 
 (defn app []
   [:div
-   [:h1 "Scopus Search"]
    [keywords-input]
-   [find-results]
-   [:hr]
-   [:h2 "Article Explorer"]
-   [article-controls]
-   [article-list]])
+   [result-section]
+   [article-section]])
 
-;; --- Mount ---
 (defonce root (rdom/create-root (.getElementById js/document "app")))
 
 (defn mount []
@@ -160,4 +171,5 @@
 
 (defn init []
   (rf/dispatch-sync [:initialize])
+  (rf/dispatch [:fetch-articles])
   (mount))
