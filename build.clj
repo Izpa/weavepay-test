@@ -1,17 +1,21 @@
 (ns build
   (:require
-   [clojure.tools.build.api :as b]))
+    [clojure.tools.build.api :as b]))
+
 
 (def lib 'izpa/weavepay-test)
 (def version (format "0.0.%s" (b/git-count-revs nil)))
 (def basis (b/create-basis {:project "deps.edn"}))
 
+
 (defn clean
   [_]
   (b/delete {:path "target"}))
 
+
 (def class-dir "target/classes")
 (def uber-file "target/app.jar")
+
 
 (defn uber
   [{:keys [version]
@@ -25,8 +29,8 @@
 
   (println "Compiling server. Version:" version)
   (b/compile-clj {:basis      basis
-                  :src-dirs   ["src"]
-                  :ns-compile '[app]
+                  :src-dirs   ["src/clj"]
+                  :ns-compile '[clj.app]
                   :class-dir  class-dir})
 
   (println "Building uberjar")
@@ -34,6 +38,7 @@
            :uber-file uber-file
            :basis     basis
            :main      'app}))
+
 
 (defn noop
   [_])                         ; run to preload mvn deps

@@ -1,15 +1,19 @@
 (ns services.scopus
-  (:require [clj-http.client :as http]
-            [cheshire.core :as json]
-            [taoensso.timbre :as log]
-            [integrant.core :as ig]))
+  (:require
+    [cheshire.core :as json]
+    [clj-http.client :as http]
+    [integrant.core :as ig]
+    [taoensso.timbre :as log]))
 
-(defn select-fields [entry]
+
+(defn select-fields
+  [entry]
   (select-keys entry
                [:prism:publicationName
                 :prism:coverDate
                 :dc:creator
                 :prism:doi]))
+
 
 (defmethod ig/init-key ::search-keyword [_ {:keys [base-url api-key]}]
   (fn [kwd]
@@ -27,6 +31,7 @@
             (json/parse-string true)
             (get-in [:search-results :entry])
             (->> (mapv select-fields)))))))
+
 
 (defmethod ig/init-key ::search-multiple [_ {:keys [search-keyword]}]
   (fn [keywords]

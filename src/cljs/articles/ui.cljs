@@ -1,8 +1,10 @@
 (ns articles.ui
   (:require
-   [re-frame.core :as rf]))
+    [re-frame.core :as rf]))
 
-(defn pagination-controls []
+
+(defn pagination-controls
+  []
   (let [total @(rf/subscribe [:articles-total])
         current-page @(rf/subscribe [:articles-page])
         per-page @(rf/subscribe [:articles-per-page])
@@ -25,7 +27,9 @@
      [:button {:disabled (= current-page max-page)
                :on-click #(rf/dispatch [:change-page max-page])} ">>"]]))
 
-(defn article-table [articles]
+
+(defn article-table
+  [articles]
   [:table
    [:thead [:tr [:th "Publication"] [:th "Author"] [:th "Date"] [:th "DOI"]]]
    [:tbody
@@ -33,7 +37,9 @@
       ^{:key doi}
       [:tr [:td title] [:td author] [:td date] [:td doi]])]])
 
-(defn article-section []
+
+(defn article-section
+  []
   (let [articles @(rf/subscribe [:articles-list])
         total @(rf/subscribe [:articles-total])
         f @(rf/subscribe [:articles-filter])

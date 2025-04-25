@@ -1,7 +1,10 @@
 (ns find.keywords-input
-  (:require [re-frame.core :as rf]))
+  (:require
+    [re-frame.core :as rf]))
 
-(defn keywords-input []
+
+(defn keywords-input
+  []
   (let [ks @(rf/subscribe [:keywords])]
     [:div
      (for [[i k] (map-indexed vector ks)]

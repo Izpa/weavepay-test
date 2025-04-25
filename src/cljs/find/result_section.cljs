@@ -1,9 +1,15 @@
 (ns find.result-section
-  (:require [re-frame.core :as rf]))
+  (:require
+    [re-frame.core :as rf]))
 
-(defn spinner [] [:div.spinner])
 
-(defn result-table [articles]
+(defn spinner
+  []
+  [:div.spinner])
+
+
+(defn result-table
+  [articles]
   [:table
    [:thead [:tr [:th "Publication"] [:th "Date"] [:th "Author"] [:th "DOI"]]]
    [:tbody
@@ -11,7 +17,9 @@
       ^{:key doi}
       [:tr [:td publication_name] [:td cover_date] [:td creator] [:td doi]])]])
 
-(defn result-section []
+
+(defn result-section
+  []
   (let [loading? @(rf/subscribe [:find-loading?])
         {:keys [new existed]} @(rf/subscribe [:find-results])]
     [:div

@@ -1,8 +1,10 @@
 (ns articles
-  (:require [integrant.core :as ig]
-            [clojure.string :as str]
-            [taoensso.timbre :as log]
-            [clojure.set :as s]))
+  (:require
+    [clojure.set :as s]
+    [clojure.string :as str]
+    [integrant.core :as ig]
+    [taoensso.timbre :as log]))
+
 
 (defmethod ig/init-key ::insert! [_ {:keys [execute!]}]
   (fn [entries]
@@ -40,6 +42,7 @@
 
       {:new new-articles
        :existed existed-articles})))
+
 
 (defmethod ig/init-key ::search [_ {:keys [execute!]}]
   (fn [{:keys [q offset limit]}]

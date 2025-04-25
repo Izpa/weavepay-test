@@ -1,9 +1,10 @@
 (ns endpoints.articles
   (:require
-   [integrant.core :as ig]
-   [taoensso.timbre :as log]
-   [cheshire.core :as json]
-   [ring.util.response :as response]))
+    [cheshire.core :as json]
+    [integrant.core :as ig]
+    [ring.util.response :as response]
+    [taoensso.timbre :as log]))
+
 
 (defmethod ig/init-key ::handler [_ {:keys [search]}]
   (fn [{{:keys [q offset limit]} :params :as request}]
@@ -13,4 +14,3 @@
         (json/generate-string)
         (response/response)
         (response/header "content-type" "application/json"))))
-
