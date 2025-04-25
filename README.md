@@ -158,6 +158,7 @@ Other available tools:
 - Handle API limits and error retries gracefully
 - Add pagination and caching for Scopus queries
 - Add frontend filtering and sorting capabilities
+- Improve logs
 
 ---
 
