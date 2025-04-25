@@ -1,5 +1,5 @@
 {:services.db/spec {:dbtype "sqlite"
-                    :dbname "articles.db"}
+                    :dbname "shared/articles.db"}
  :services.db/ds #ig/ref :services.db/spec
  :services.db/migrate {:store :database
                        :migration-dir "migrations"
@@ -7,11 +7,14 @@
  :services.db/execute! {:ds #ig/ref :services.db/ds}
  :services.db/execute-honey! {:execute! #ig/ref :services.db/execute!}
  :articles/insert! {:execute! #ig/ref :services.db/execute-honey!}
+ :articles/search {:execute! #ig/ref :services.db/execute-honey!}
  :services.scopus/search-keyword {:base-url "https://api.elsevier.com/content/search/scopus"
                                   :api-key #env "SCOPUS_API_KEY"}
  :services.scopus/search-multiple {:search-keyword #ig/ref :services.scopus/search-keyword}
  :endpoints.find/handler {:scopus-find #ig/ref :services.scopus/search-multiple
                           :insert-articles! #ig/ref :articles/insert!}
- :http-server/route-handler [["/find" {:get #ig/ref :endpoints.find/handler}]]
+ :endpoints.articles/handler {:search #ig/ref :articles/search}
+ :http-server/route-handler [["/find" {:get #ig/ref :endpoints.find/handler}]
+                             ["/articles" {:get #ig/ref :endpoints.articles/handler}]]
  :http-server/server {:port #or [#env "HTTP_PORT" 8085]
                       :route-handler #ig/ref :http-server/route-handler}}
