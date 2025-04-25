@@ -178,7 +178,7 @@
 (defn article-table [articles]
   [:table
    [:thead
-    [:tr [:th "Title"] [:th "Author"] [:th "Date"] [:th "DOI"]]]
+    [:tr [:th "Publcation"] [:th "Author"] [:th "Date"] [:th "DOI"]]]
    [:tbody
     (for [{:keys [title author date doi]} articles]
       ^{:key doi}
