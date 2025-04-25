@@ -19,7 +19,18 @@
   (when (instance? java.io.Closeable ds)
     (.close ^java.io.Closeable ds)))
 
-(defmethod ig/init-key ::migrate [_ config]
+(defmethod ig/init-key :services.db/migrate [_ {:keys [db migration-dir] :as config}]
+  ;; Ensure the shared directory exists
+  (let [db-path (:dbname db)]
+    (when (and (string? db-path)
+               (not (.startsWith db-path "/"))) ; only care if path is relative
+      (let [dir (-> (java.io.File. db-path) .getParent java.io.File.)]
+        (when (and dir (not (.exists dir)))
+          (log/info "Creating DB directory:" (.getPath dir))
+          (.mkdirs dir)))))
+  ;; Log config
+  (log/info "Running migratus with config:" config)
+  ;; Run migrations
   (migratus/migrate config)
   config)
 

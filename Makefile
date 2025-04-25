@@ -1,3 +1,12 @@
+APP_NAME ?= app
+SERVER_PORT ?= 8085
+VERSION ?= $(shell git rev-parse --short HEAD)
+
+DOCKER_RUN_OPTS = -e SCOPUS_API_KEY=${SCOPUS_API_KEY} \
+                  -e SERVER_PORT=${SERVER_PORT} \
+                  -p ${SERVER_PORT}:${SERVER_PORT} \
+                  --name ${APP_NAME} -d ${APP_NAME}:${VERSION}
+
 .PHONY: unit-test
 unit-test:
 	clojure -M:run-test:unit-test unit-test
@@ -12,7 +21,7 @@ kibit:
 
 .PHONY: kondo
 kondo:
-	clojure -M:unit-test:integration-test:kondo --lint src test --paralell --cache false
+	clojure -M:unit-test:integration-test:kondo --lint src test --parallel --cache false
 
 .PHONY: eastwood
 eastwood:
@@ -34,25 +43,9 @@ build-uberjar:
 run-uberjar:
 	java -jar target/app.jar
 
-.PHONY: build-docker
-build-docker:
-	docker build . -t ${APP_NAME}
-
-.PHONY: run-docker
-run-docker:
-	docker run -p ${SERVER_PORT}:${SERVER_PORT} --name ${APP_NAME} -d ${APP_NAME}
-
-.PHONY: stop-docker
-stop-docker:
-	docker stop ${APP_NAME} && docker rm ${APP_NAME}
-
 .PHONY: run-dev
 run-dev:
-	clj -A:dev:unit-test:integration-test -X user/run-system!
-
-.PHONY: run-system
-run-system:
-	docker-compose -f docker-compose.yml up -d
+	clj -M:dev:unit-test:integration-test -X user/run-system!
 
 .PHONY: clj-deps
 clj-deps:
@@ -60,3 +53,61 @@ clj-deps:
 
 .PHONY: all-checks
 all-checks: cljstyle-check kibit kondo eastwood unit-test integration-test
+
+.PHONY: npm-install
+npm-install:
+	npm install
+
+.PHONY: cljs-build
+cljs-build:
+	clojure -M:cljs release app
+
+.PHONY: cljs-watch
+cljs-watch:
+	clojure -M:cljs:cljs-opts watch app
+
+.PHONY: cljs-repl
+cljs-repl:
+	clojure -M:cljs:cljs-opts cljs-repl app
+
+.PHONY: dev-frontend
+dev-frontend: npm-install cljs-watch
+
+.PHONY: dev-full
+dev-full: npm-install
+	$(MAKE) run-dev
+
+.PHONY: build-all
+build-all: npm-install cljs-build build-uberjar
+
+.PHONY: docker-build
+docker-build:
+	docker build --build-arg VERSION=${VERSION} -t ${APP_NAME}:${VERSION} .
+
+.PHONY: run-docker
+run-docker:
+	docker run ${DOCKER_RUN_OPTS}
+
+.PHONY: run-docker-persist
+run-docker-persist:
+	@mkdir -p shared
+	docker run -v $(shell pwd)/shared:/app/shared ${DOCKER_RUN_OPTS}
+
+.PHONY: docker-stop
+docker-stop:
+	@docker stop ${APP_NAME} || true
+	@docker rm ${APP_NAME} || true
+
+.PHONY: docker-clean
+docker-clean: docker-stop
+	@echo "Cleaning shared volume..."
+	@rm -rf ./shared/*
+	@mkdir -p shared
+
+.PHONY: docker-logs
+docker-logs:
+	docker logs -f ${APP_NAME}
+
+.PHONY: docker-exec
+docker-exec:
+	docker exec -it ${APP_NAME} /bin/bash

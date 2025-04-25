@@ -20,13 +20,13 @@
   (clean nil)
 
   (println "Bundling sources")
-  (b/copy-dir {:src-dirs   ["src" "resources"]
+  (b/copy-dir {:src-dirs   ["src/clj" "src/cljc" "resources"]
                :target-dir class-dir})
 
   (println "Compiling server. Version:" version)
   (b/compile-clj {:basis      basis
-                  :src-dirs   ["src/clj"]
-                  :ns-compile '[clj.app]
+                  :src-dirs   ["src/clj" "src/cljc" "resources"]
+                  :ns-compile '[app]
                   :class-dir  class-dir})
 
   (println "Building uberjar")
