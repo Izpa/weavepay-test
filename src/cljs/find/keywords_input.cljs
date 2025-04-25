@@ -5,7 +5,8 @@
 
 (defn keywords-input
   []
-  (let [ks @(rf/subscribe [:keywords])]
+  (let [ks @(rf/subscribe [:keywords])
+        err @(rf/subscribe [:find-error])]
     [:div
      (for [[i k] (map-indexed vector ks)]
        ^{:key i}
@@ -15,5 +16,6 @@
                  :on-change #(rf/dispatch [:update-keyword i (.. % -target -value)])}]
         (when (> (count ks) 1)
           [:button {:on-click #(rf/dispatch [:remove-keyword i])} "-"])])
+     (when err [:p {:style {:color "red"}} err])
      [:button {:on-click #(rf/dispatch [:add-keyword])} "+"]
      [:button {:on-click #(rf/dispatch [:do-find])} "Find"]]))

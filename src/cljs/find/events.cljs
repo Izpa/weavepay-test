@@ -2,6 +2,8 @@
   (:require
     [ajax.core :refer [json-response-format]]
     [clojure.string :as str]
+    [schema :as schema]
+    [malli.core :as m]
     [re-frame.core :as rf]))
 
 
@@ -21,15 +23,17 @@
   :do-find
   (fn [{:keys [db]} _]
     (let [words (->> (:keywords db)
-                     (filter #(not (str/blank? %)))
-                     (map #(str "word=" (js/encodeURIComponent %)))
-                     (str/join "&"))]
-      {:db (assoc db :find-loading? true)
-       :http-xhrio {:method :get
-                    :uri (str "/find?" words)
-                    :response-format (json-response-format {:keywords? true})
-                    :on-success [:find-success]
-                    :on-failure [:find-failure]}})))
+                     (filter #(not (str/blank? %))))
+          errors (when-not (m/validate schema/find-request {:word (vec words)})
+                   "Please enter at least one valid keyword.")]
+      (if errors
+        {:db (assoc db :find-error errors)}
+        {:db (assoc db :find-loading? true :find-error nil)
+         :http-xhrio {:method :get
+                      :uri (str "/find?" (str/join "&" (map #(str "word=" (js/encodeURIComponent %)) words)))
+                      :response-format (json-response-format {:keywords? true})
+                      :on-success [:find-success]
+                      :on-failure [:find-failure]}}))))
 
 
 (rf/reg-event-db :find-success

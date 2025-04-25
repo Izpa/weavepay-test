@@ -1,6 +1,8 @@
 (ns articles.events
   (:require
     [ajax.core :refer [json-response-format]]
+    [schema :as schema]
+    [malli.core :as m]
     [re-frame.core :as rf]))
 
 
@@ -23,15 +25,20 @@
           new-page (or page current-page)
           per-page (:articles-per-page db)
           offset (* (dec new-page) per-page)
-          query (:articles-filter db)]
-      {:db (assoc db
-                  :articles-page new-page
-                  :articles-page-input (str new-page))
-       :http-xhrio {:method :get
-                    :uri (str "/articles?q=" (js/encodeURIComponent query)
-                              "&offset=" offset "&limit=" per-page)
-                    :response-format (json-response-format {:keywords? true})
-                    :on-success [:articles-success]}})))
+          query (:articles-filter db)
+
+          params {:q query :offset offset :limit per-page}]
+      (if-not (m/validate schema/article-query params)
+        {:db (assoc db :articles-error "Invalid input")}
+        {:db (-> db
+                 (assoc :articles-error nil)
+                 (assoc :articles-page new-page)
+                 (assoc :articles-page-input (str new-page)))
+         :http-xhrio {:method :get
+                      :uri (str "/articles?q=" (js/encodeURIComponent query)
+                                "&offset=" offset "&limit=" per-page)
+                      :response-format (json-response-format {:keywords? true})
+                      :on-success [:articles-success]}}))))
 
 
 (rf/reg-event-db

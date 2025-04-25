@@ -14,7 +14,7 @@
    [:thead [:tr [:th "Publication"] [:th "Date"] [:th "Author"] [:th "DOI"]]]
    [:tbody
     (for [{:articles/keys [publication_name cover_date creator doi]} articles]
-      ^{:key doi}
+      ^{:key (or doi publication_name)}
       [:tr [:td publication_name] [:td cover_date] [:td creator] [:td doi]])]])
 
 

@@ -3,6 +3,7 @@
     [re-frame.core :as rf]))
 
 
+(rf/reg-sub :articles-error (fn [db _] (:articles-error db)))
 (rf/reg-sub :articles-list (fn [db _] (:articles-list db)))
 (rf/reg-sub :articles-total (fn [db _] (:articles-total db)))
 (rf/reg-sub :articles-filter (fn [db _] (:articles-filter db)))

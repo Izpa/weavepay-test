@@ -43,7 +43,8 @@
   (let [articles @(rf/subscribe [:articles-list])
         total @(rf/subscribe [:articles-total])
         f @(rf/subscribe [:articles-filter])
-        per @(rf/subscribe [:articles-per-page])]
+        per @(rf/subscribe [:articles-per-page])
+        err @(rf/subscribe [:articles-error])]
     [:div
      [:div
       [:label "Filter: "]
@@ -55,7 +56,9 @@
                :min 1
                :value per
                :on-change #(rf/dispatch [:update-articles-per-page (js/parseInt (.. % -target -value))])}]
-      [:button {:on-click #(rf/dispatch [:fetch-articles 1])} "Apply"]]
+      [:button {:on-click #(rf/dispatch [:fetch-articles 1])} "Apply"]
+      (when err
+        [:p {:style {:color "red"}} err])]
      (cond
        (nil? articles) [:p "No articles for your query..."]
        (empty? articles) [:p "No articles in db"]
