@@ -1,4 +1,7 @@
-{:foo/handler nil
- :http-server/route-handler [["/foo" {:get #ig/ref :foo/handler}]]
+{:services.scopus/search-keyword {:base-url "https://api.elsevier.com/content/search/scopus"
+                                  :api-key #env "SCOPUS_API_KEY"}
+ :services.scopus/search-multiple {:search-keyword #ig/ref :services.scopus/search-keyword}
+ :endpoints.find/handler {:scopus-find #ig/ref :services.scopus/search-multiple}
+ :http-server/route-handler [["/find" {:get #ig/ref :endpoints.find/handler}]]
  :http-server/server {:port #or [#env "HTTP_PORT" 8085]
                       :route-handler #ig/ref :http-server/route-handler}}

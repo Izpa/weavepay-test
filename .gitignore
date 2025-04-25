@@ -21,3 +21,4 @@ resources/public/js
 .vscode
 .DS_Store
 node_modules
+local
