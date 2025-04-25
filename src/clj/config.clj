@@ -4,7 +4,9 @@
     [aero.core :as aero]
     [clojure.java.io :as io]
     [clojure.string]
-    [integrant.core :as ig]))
+    [integrant.core :as ig]
+    [malli.core :as m]
+    [schema :as schema]))
 
 
 (defmethod aero/reader 'ig/ref [_ _ value]
@@ -40,9 +42,11 @@
 (defn init!
   ([] (init! :default))
   ([profile]
-   (-> profile
-       prepare
-       ig/init)))
+   (let [cfg (prepare profile)]
+     (when (System/getenv "VALIDATE_CONFIG")
+       (when-not (m/validate schema/config cfg)
+         (throw (ex-info "Invalid config" {:errors (m/explain schema/config cfg)}))))
+     (ig/init cfg))))
 
 
 (defn stop!

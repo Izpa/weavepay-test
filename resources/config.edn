@@ -1,20 +1,52 @@
-{:services.db/spec {:dbtype "sqlite"
+{:schema/find-request-parameters {}
+ :schema/article-query-parameters {}
+ :schema/find-response {}
+ :schema/articles-response {}
+
+ :services.db/spec {:dbtype "sqlite"
                     :dbname "shared/articles.db"}
+
  :services.db/ds #ig/ref :services.db/spec
+
  :services.db/migrate {:store :database
                        :migration-dir "migrations"
                        :db #ig/ref :services.db/spec}
+
  :services.db/execute! {:ds #ig/ref :services.db/ds}
+
  :services.db/execute-honey! {:execute! #ig/ref :services.db/execute!}
+
  :articles/insert! {:execute! #ig/ref :services.db/execute-honey!}
+
  :articles/search {:execute! #ig/ref :services.db/execute-honey!}
- :services.scopus/search-keyword {:base-url "https://api.elsevier.com/content/search/scopus"
-                                  :api-key #env "SCOPUS_API_KEY"}
- :services.scopus/search-multiple {:search-keyword #ig/ref :services.scopus/search-keyword}
- :endpoints.find/handler {:scopus-find #ig/ref :services.scopus/search-multiple
-                          :insert-articles! #ig/ref :articles/insert!}
- :endpoints.articles/handler {:search #ig/ref :articles/search}
- :http-server/route-handler [["/find" {:get #ig/ref :endpoints.find/handler}]
-                             ["/articles" {:get #ig/ref :endpoints.articles/handler}]]
- :http-server/server {:port #or [#env "HTTP_PORT" 8085]
-                      :route-handler #ig/ref :http-server/route-handler}}
+
+ :services.scopus/search-keyword
+ {:base-url "https://api.elsevier.com/content/search/scopus"
+  :api-key #env "SCOPUS_API_KEY"}
+
+ :services.scopus/search-multiple
+ {:search-keyword #ig/ref :services.scopus/search-keyword}
+
+ :endpoints.find/handler
+ {:scopus-find #ig/ref :services.scopus/search-multiple
+  :insert-articles! #ig/ref :articles/insert!}
+
+ :endpoints.articles/handler
+ {:search #ig/ref :articles/search}
+
+ ;; Swagger-ready routes
+ :http-server/route-handler
+ [["/find"
+   {:get {:summary "Find and insert articles by keywords"
+          :parameters #ig/ref :schema/find-request-parameters
+          :responses {200 #ig/ref :schema/find-response}
+          :handler #ig/ref :endpoints.find/handler}}]
+  ["/articles"
+   {:get {:summary "Search articles in the database"
+          :parameters #ig/ref :schema/article-query-parameters
+          :responses {200 #ig/ref :schema/articles-response}
+          :handler #ig/ref :endpoints.articles/handler}}]]
+
+ :http-server/server
+ {:port #or [#env "HTTP_PORT" 8085]
+  :route-handler #ig/ref :http-server/route-handler}}

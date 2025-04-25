@@ -12,7 +12,7 @@
   []
   (integrant.repl/set-prep! #(ig/prep (prepare)))
   (igr/go)
-  (start-watch [{:path "."
+  (start-watch [{:path "src"
                  :event-types [:create
                                :modify
                                :delete]

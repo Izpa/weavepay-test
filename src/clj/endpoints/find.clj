@@ -1,17 +1,18 @@
 (ns endpoints.find
   (:require
-    [cheshire.core :as json]
+    [endpoints.common :as common]
     [integrant.core :as ig]
-    [ring.util.response :as response]
+    [schema :as schema]
     [taoensso.timbre :as log]))
 
 
 (defmethod ig/init-key ::handler [_ {:keys [scopus-find insert-articles!]}]
-  (fn [{{:keys [word]} :params :as request}]
+  (fn [{{:keys [word] :as params} :params :as request}]
     (log/info "Receive http: " request)
-    (-> (if (sequential? word) word [word])
-        scopus-find
-        insert-articles!
-        (json/generate-string)
-        (response/response)
-        (response/header "content-type" "application/json"))))
+    (common/handle-with-validation
+      params
+      schema/find-request
+      (fn [_]
+        (-> (if (sequential? word) word [word])
+            scopus-find
+            insert-articles!)))))

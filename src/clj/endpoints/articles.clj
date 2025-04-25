@@ -1,16 +1,16 @@
 (ns endpoints.articles
   (:require
-    [cheshire.core :as json]
+    [endpoints.common :as common]
     [integrant.core :as ig]
-    [ring.util.response :as response]
+    [schema :as schema]
     [taoensso.timbre :as log]))
 
 
 (defmethod ig/init-key ::handler [_ {:keys [search]}]
-  (fn [{{:keys [q offset limit]} :params :as request}]
+  (fn [{{:keys [q offset limit] :as params} :params :as request}]
     (log/info "Receive http: " request)
-    (-> {:filter filter :q q :offset offset :limit limit}
-        search
-        (json/generate-string)
-        (response/response)
-        (response/header "content-type" "application/json"))))
+    (common/handle-with-validation
+      params
+      schema/article-query
+      (fn [_]
+        (search {:filter filter :q q :offset offset :limit limit})))))

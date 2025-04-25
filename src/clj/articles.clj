@@ -3,32 +3,38 @@
     [clojure.set :as s]
     [clojure.string :as str]
     [integrant.core :as ig]
+    [malli.core :as m]
+    [schema :as schema]
     [taoensso.timbre :as log]))
 
 
 (defmethod ig/init-key ::insert! [_ {:keys [execute!]}]
   (fn [entries]
-    (log/info "Entires: " entries)
+    (log/info "Processing entries:" (count entries))
     (let [all-articles
-          (map #(s/rename-keys % {:prism:publicationName :publication_name
-                                  :prism:coverDate       :cover_date
-                                  :dc:creator            :creator
-                                  :prism:doi             :doi})
-               entries)
+          (->> entries
+               (map #(s/rename-keys % {:prism:publicationName ::publication_name
+                                       :prism:coverDate       ::cover_date
+                                       :dc:creator            ::creator
+                                       :prism:doi             ::doi}))
+               (filter #(m/validate schema/internal-article %)))
 
-          dois (mapv :doi all-articles)
+          dois (->> all-articles (map ::doi) (remove nil?) vec)
 
           existing-dois
-          (->> {:select [:doi]
-                :from [:articles]
-                :where [:in :doi dois]}
-               execute!
-               (mapv ::doi)
-               set)
+          (if (seq dois)
+            (->> {:select [:doi]
+                  :from [:articles]
+                  :where [:in :doi dois]}
+                 execute!
+                 (mapv ::doi)
+                 set)
+            #{})
 
           [new-articles existed-articles]
           (reduce (fn [[new exist] article]
-                    (if (contains? existing-dois (:doi article))
+                    (if (and (::doi article)
+                             (contains? existing-dois (::doi article)))
                       [new (conj exist article)]
                       [(conj new article) exist]))
                   [[] []]
@@ -42,7 +48,6 @@
 
       {:new new-articles
        :existed existed-articles})))
-
 
 (defmethod ig/init-key ::search [_ {:keys [execute!]}]
   (fn [{:keys [q offset limit]}]

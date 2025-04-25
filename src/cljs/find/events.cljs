@@ -34,17 +34,9 @@
 
 (rf/reg-event-db :find-success
                  (fn [db [_ result]]
-                   (let [normalize (fn [a]
-                                     {:keyword (:keyword a)
-                                      :publication_name (:publication_name a)
-                                      :cover_date (:cover_date a)
-                                      :creator (:creator a)
-                                      :doi (:doi a)})
-                         new (mapv normalize (:new result))
-                         existed (mapv normalize (:existed result))]
-                     (-> db
-                         (assoc :find-results {:new new :existed existed})
-                         (assoc :find-loading? false)))))
+                   (-> db
+                       (assoc :find-results result)
+                       (assoc :find-loading? false))))
 
 
 (rf/reg-event-db :find-failure

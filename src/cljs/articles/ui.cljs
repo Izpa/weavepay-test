@@ -57,7 +57,7 @@
                :on-change #(rf/dispatch [:update-articles-per-page (js/parseInt (.. % -target -value))])}]
       [:button {:on-click #(rf/dispatch [:fetch-articles 1])} "Apply"]]
      (cond
-       (nil? articles) [:p "Loading..."]
+       (nil? articles) [:p "No articles for your query..."]
        (empty? articles) [:p "No articles in db"]
        :else [article-table articles])
      (when (pos? total)

@@ -13,7 +13,7 @@
   [:table
    [:thead [:tr [:th "Publication"] [:th "Date"] [:th "Author"] [:th "DOI"]]]
    [:tbody
-    (for [{:keys [publication_name cover_date creator doi]} articles]
+    (for [{:articles/keys [publication_name cover_date creator doi]} articles]
       ^{:key doi}
       [:tr [:td publication_name] [:td cover_date] [:td creator] [:td doi]])]])
 
