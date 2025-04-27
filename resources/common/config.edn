@@ -5,13 +5,14 @@
 
          :services.db/spec {:dbtype "sqlite"
                             :dbname #profile {:default "shared/articles.db"
-                                              :test "file:testdb?mode=memory&cache=shared"}}
+                                              :dbname "file:testdb?mode=memory&cache=shared"}}
 
          :services.db/ds #ig/ref :services.db/spec
 
          :services.db/migrate {:store :database
                                :migration-dir "migrations"
-                               :db #ig/ref :services.db/spec}
+                               :db #ig/ref :services.db/spec
+                               :ds #ig/ref :services.db/ds}
 
          :services.db/execute! {:ds #ig/ref :services.db/ds}
 
@@ -33,16 +34,18 @@
          {:search #ig/ref :articles/search}
 
          :http-server/route-handler
-         [["/find"
-           {:get {:summary "Find and insert articles by keywords"
-                  :parameters #ig/ref :schema/find-request-parameters
-                  :responses {200 #ig/ref :schema/find-response}
-                  :handler #ig/ref :endpoints.find/handler}}]
-          ["/articles"
-           {:get {:summary "Search articles in the database"
-                  :parameters #ig/ref :schema/article-query-parameters
-                  :responses {200 #ig/ref :schema/articles-response}
-                  :handler #ig/ref :endpoints.articles/handler}}]]
+         {:js-path #profile {:default "js/main.js"
+                             :test "js/test/main.js"}
+          :routes [["/find"
+            {:get {:summary "Find and insert articles by keywords"
+                   :parameters #ig/ref :schema/find-request-parameters
+                   :responses {200 #ig/ref :schema/find-response}
+                   :handler #ig/ref :endpoints.find/handler}}]
+           ["/articles"
+            {:get {:summary "Search articles in the database"
+                   :parameters #ig/ref :schema/article-query-parameters
+                   :responses {200 #ig/ref :schema/articles-response}
+                   :handler #ig/ref :endpoints.articles/handler}}]]}
 
          :http-server/server
          {:port #profile {:default #or [#env "HTTP_PORT" 8085]

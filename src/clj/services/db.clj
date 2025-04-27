@@ -4,34 +4,32 @@
    [integrant.core :as ig]
    [migratus.core :as migratus]
    [next.jdbc :as jdbc]
-   [next.jdbc.connection :as conn]
-   [taoensso.timbre :as log])
-  (:import
-   (com.zaxxer.hikari
-    HikariDataSource)))
+   [taoensso.timbre :as log]))
 
 (defmethod ig/init-key ::spec [_ spec] spec)
 
 (defmethod ig/init-key ::ds [_ db-spec]
-  (conn/->pool HikariDataSource db-spec))
+  (next.jdbc/get-datasource db-spec))
 
 (defmethod ig/halt-key! ::ds [_ ds]
   (when (instance? java.io.Closeable ds)
     (.close ^java.io.Closeable ds)))
 
-(defmethod ig/init-key :services.db/migrate [_ {:keys [db] :as config}]
-  ;; Ensure the shared directory exists
+(defmethod ig/init-key :services.db/migrate [_ {:keys [db ds migration-dir] :as config}]
   (let [db-path (:dbname db)]
     (when (and (string? db-path)
-               (not (.startsWith ^String db-path "/"))) ; вот здесь ^String
-      (let [dir (-> (java.io.File. ^String db-path) .getParent java.io.File.)] ; и здесь ^String
+               (not (or (.startsWith ^String db-path "/")
+                        (.startsWith ^String db-path "mem:")
+                        (.contains ^String db-path ";"))))
+      (let [dir (-> (java.io.File. ^String db-path) .getParent java.io.File.)]
         (when (and dir (not (.exists dir)))
           (log/info "Creating DB directory:" (.getPath dir))
           (.mkdirs dir)))))
-  ;; Log config
-  (log/info "Running migratus with config:" config)
-  ;; Run migrations
-  (migratus/migrate config)
+
+  (migratus/migrate {:store :database
+                     :migration-dir migration-dir
+                     :db {:connection (jdbc/get-connection ds)
+                          :managed-connection? true}})
   config)
 
 (defmethod ig/init-key ::execute! [_ {:keys [ds]}]

@@ -1,6 +1,7 @@
 (ns http-server
   (:require
    [clojure.java.io :as io]
+   [clojure.string :as s]
    [integrant.core :as ig]
    [malli.core :as m]
    [muuntaja.core :as muuntaja]
@@ -18,11 +19,15 @@
    [taoensso.timbre :as log]))
 
 (defn index-page
-  [_]
-  (-> (io/resource "public/index.html")
-      (slurp)
-      (response/response)
-      (response/content-type "text/html")))
+  [js-path]
+  (let [html (slurp (io/resource "index.html"))
+        updated-html (s/replace
+                      html
+                      #"(?<=<script src=\")/js/main\.js(?=\")"
+                      js-path)]
+    (-> updated-html
+        response/response
+        (response/content-type "text/html"))))
 
 (def swagger-routes
   [["/swagger.json"
@@ -33,7 +38,7 @@
    ["/swagger/*"
     (swagger-ui/create-swagger-ui-handler {:url "/swagger.json"})]])
 
-(defmethod ig/init-key ::route-handler [_ routes]
+(defmethod ig/init-key ::route-handler [_ {:keys [routes js-path]}]
   (let [all-routes (concat routes swagger-routes)]
     (ring/ring-handler
      (ring/router all-routes
@@ -45,7 +50,7 @@
                                        muuntaja-mw/format-request-middleware
                                        coercion/coerce-request-middleware
                                        coercion/coerce-response-middleware]}})
-     (constantly (index-page nil)))))
+     (constantly (index-page js-path)))))
 
 (defmethod response/resource-data :resource
   [^java.net.URL url]

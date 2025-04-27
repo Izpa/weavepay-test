@@ -17,7 +17,7 @@ integration-test:
 
 .PHONY: e2e-test
 e2e-test:
-	clojure -M:run-test:test-common:e2e-test e2e
+	clojure -M:cljs:run-test:test-common:e2e-test e2e
 
 .PHONY: kibit
 kibit:
@@ -64,7 +64,7 @@ npm-install:
 
 .PHONY: cljs-build
 cljs-build:
-	clojure -M:cljs:cljs-opts release app
+	clojure -M:cljs:cljs-opts release prod
 
 .PHONY: cljs-watch
 cljs-watch:

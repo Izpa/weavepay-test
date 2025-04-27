@@ -53,7 +53,7 @@
                :min 1
                :value per
                :on-change #(rf/dispatch [:update-articles-per-page (js/parseInt (.. % -target -value))])}]
-      [:button {:on-click #(rf/dispatch [:fetch-articles 1])} "Apply"]
+      [:button {:on-click #(rf/dispatch [:fetch-articles 1])} "Show"]
       (when err
         [:p {:style {:color "red"}} err])]
      (cond
