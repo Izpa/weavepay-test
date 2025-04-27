@@ -9,7 +9,7 @@
 
          :services.db/ds #ig/ref :services.db/spec
 
-         :services.db/migrate {:store :filesystem
+         :services.db/migrate {:store :database
                                :migration-dir "migrations"
                                :db #ig/ref :services.db/spec}
 

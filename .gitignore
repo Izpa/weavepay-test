@@ -24,4 +24,4 @@ node_modules
 local
 shared/*.db
 *cljs-runtime*
-js/main.*.js
+*/js/main.*.js
