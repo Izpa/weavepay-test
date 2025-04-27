@@ -22,10 +22,6 @@ jobs:
             - name: Checkout repo
               uses: actions/checkout@v4
 
-            - uses: webfactory/ssh-agent@v0.9.0
-              with:
-                  ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-      
             - name: Install clojure tools
               uses: DeLaGuardo/setup-clojure@12.3
               with:
@@ -54,10 +50,6 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
-
-      - uses: webfactory/ssh-agent@v0.9.0
-        with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
       - name: Install clojure tools
         uses: DeLaGuardo/setup-clojure@12.3
@@ -94,10 +86,6 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - uses: webfactory/ssh-agent@v0.9.0
-        with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-
       - name: Install clojure tools
         uses: DeLaGuardo/setup-clojure@12.3
         with:
@@ -131,10 +119,6 @@ jobs:
         
       - name: Checkout repo
         uses: actions/checkout@v4
-
-      - uses: webfactory/ssh-agent@v0.9.0
-        with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
       - name: Install clojure tools
         uses: DeLaGuardo/setup-clojure@12.3
@@ -170,10 +154,6 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - uses: webfactory/ssh-agent@v0.9.0
-        with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-
       - name: Install clojure tools
         uses: DeLaGuardo/setup-clojure@12.3
         with:
@@ -208,10 +188,6 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - uses: webfactory/ssh-agent@v0.9.0
-        with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-
       - name: Install clojure tools
         uses: DeLaGuardo/setup-clojure@12.3
         with:
@@ -245,10 +221,6 @@ jobs:
            
       - name: Checkout repo
         uses: actions/checkout@v4
-
-      - uses: webfactory/ssh-agent@v0.9.0
-        with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
       - name: Install clojure tools
         uses: DeLaGuardo/setup-clojure@12.3
