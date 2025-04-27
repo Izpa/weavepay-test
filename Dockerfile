@@ -21,10 +21,10 @@ RUN clojure -P && npm ci
 
 # copy sources
 COPY src src
-COPY resources resources
+COPY resources/common resources/common
 
 # clean old JS build if exists
-RUN rm -rf resources/public/js
+RUN rm -rf resources/common/public/js
 
 # build production frontend
 RUN clojure -M:cljs:cljs-opts release app
@@ -40,7 +40,7 @@ FROM openjdk:11
 WORKDIR /
 
 COPY --from=builder /app/target/app.jar app.jar
-COPY --from=builder /app/resources/public /app/resources/public
+COPY --from=builder /app/resources/common/public /app/resources/common/public
 
 ARG VERSION=local
 ENV APP_VERSION=$VERSION
