@@ -64,7 +64,7 @@ npm-install:
 
 .PHONY: cljs-build
 cljs-build:
-	clojure -M:cljs release app
+	clojure -M:cljs:cljs-opts release app
 
 .PHONY: cljs-watch
 cljs-watch:

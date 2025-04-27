@@ -9,11 +9,10 @@
    :asset-path "/js"
    :modules {:main {:init-fn core/init}}
    :devtools {:after-load core/mount
-              :watch-dir "resources/public"}}
+              :watch-dir "resources/common/public"}}
 
   :prod
   {:target :browser
    :output-dir "resources/common/public/js"
    :asset-path "/js"
-   :module-hash-names true
-   :modules {:main {:init-fn core/start!}}}}}
+   :modules {:main {:init-fn core/init}}}}}
