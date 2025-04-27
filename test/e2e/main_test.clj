@@ -12,5 +12,5 @@
   (c/testing "Check content on main page"
     (e/go c/*driver* server-address)
     (e/wait 1)
-    (is (e/has-text? c/*driver* "Filter"))
+    (is (e/has-text? c/*driver* "Show"))
     (is (not (e/has-text? c/*driver* "foo")))))
