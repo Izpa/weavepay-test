@@ -37,8 +37,13 @@ RUN clojure -T:build uber
 # --- Stage 2: Final image ---
 FROM openjdk:11
 
-WORKDIR /
+# set working directory
+WORKDIR /app
 
+# create shared folder to persist data
+RUN mkdir -p /app/shared
+
+# copy built artifacts
 COPY --from=builder /app/target/app.jar app.jar
 COPY --from=builder /app/resources/common/public /app/resources/common/public
 
