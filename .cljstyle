@@ -1,6 +1,7 @@
-{:rules
-  {:eof-newline {:enabled? true
-                 :trailing-blanks? false}
-   :indentation {:list-indent 1}
-   :blank-lines {:max-consecutive 1
-                 :padding-lines 1}}}
+{:paths ["src" "test"]
+ :rules
+   {:eof-newline {:enabled? true
+                  :trailing-blanks? false}
+    :indentation {:list-indent 1}
+    :blank-lines {:max-consecutive 1
+                  :padding-lines 1}}}

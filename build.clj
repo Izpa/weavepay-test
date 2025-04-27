@@ -20,12 +20,12 @@
   (clean nil)
 
   (println "Bundling sources")
-  (b/copy-dir {:src-dirs   ["src/clj" "src/cljc" "resources"]
+  (b/copy-dir {:src-dirs   ["src/clj" "src/cljc" "resources/common"]
                :target-dir class-dir})
 
   (println "Compiling server. Version:" version)
   (b/compile-clj {:basis      basis
-                  :src-dirs   ["src/clj" "src/cljc" "resources"]
+                  :src-dirs   ["src/clj" "src/cljc" "resources/common"]
                   :ns-compile '[app]
                   :class-dir  class-dir})
 

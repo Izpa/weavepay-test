@@ -19,12 +19,12 @@
   (when (instance? java.io.Closeable ds)
     (.close ^java.io.Closeable ds)))
 
-(defmethod ig/init-key :services.db/migrate [_ {:keys [db migration-dir] :as config}]
+(defmethod ig/init-key :services.db/migrate [_ {:keys [db] :as config}]
   ;; Ensure the shared directory exists
   (let [db-path (:dbname db)]
     (when (and (string? db-path)
-               (not (.startsWith db-path "/"))) ; only care if path is relative
-      (let [dir (-> (java.io.File. db-path) .getParent java.io.File.)]
+               (not (.startsWith ^String db-path "/"))) ; вот здесь ^String
+      (let [dir (-> (java.io.File. ^String db-path) .getParent java.io.File.)] ; и здесь ^String
         (when (and dir (not (.exists dir)))
           (log/info "Creating DB directory:" (.getPath dir))
           (.mkdirs dir)))))

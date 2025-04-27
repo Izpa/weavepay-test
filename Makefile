@@ -9,23 +9,27 @@ DOCKER_RUN_OPTS = -e SCOPUS_API_KEY=${SCOPUS_API_KEY} \
 
 .PHONY: unit-test
 unit-test:
-	clojure -M:run-test:unit-test unit-test
+	clojure -M:run-test:test-common:unit-test unit-test
 
 .PHONY: integration-test
 integration-test:
-	clojure -M:run-test:integration-test integration
+	clojure -M:run-test:test-common:integration-test integration
+
+.PHONY: e2e-test
+e2e-test:
+	clojure -M:run-test:test-common:e2e-test e2e
 
 .PHONY: kibit
 kibit:
-	clojure -M:unit-test:integration-test:kibit --paths src,test
+	clojure -M:unit-test:integration-test:e2e-test:test-common:cljs:kibit --paths src,test
 
 .PHONY: kondo
 kondo:
-	clojure -M:unit-test:integration-test:kondo --lint src test --parallel --cache false
+	clojure -M:unit-test:integration-test:e2e-test:test-common:cljs:kondo --lint src test --parallel --cache false
 
 .PHONY: eastwood
 eastwood:
-	clojure -M:unit-test:integration-test:eastwood
+	clojure -M:unit-test:integration-test:e2e-test:test-common:cljs:eastwood
 
 .PHONY: cljstyle-check
 cljstyle-check:
@@ -45,14 +49,14 @@ run-uberjar:
 
 .PHONY: run-dev
 run-dev:
-	clj -M:dev:unit-test:integration-test -X user/run-system!
+	clj -M:dev:cljs:test-common:unit-test:integration-test:e2e-test -X user/run-system!
 
 .PHONY: clj-deps
 clj-deps:
 	clj -X:deps prep 
 
 .PHONY: all-checks
-all-checks: cljstyle-check kibit kondo eastwood unit-test integration-test
+all-checks: cljstyle-check kibit kondo eastwood unit-test integration-test e2e-test
 
 .PHONY: npm-install
 npm-install:

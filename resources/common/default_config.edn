@@ -1,0 +1,3 @@
+{:services.scopus/search-keyword
+ {:base-url "https://api.elsevier.com/content/search/scopus"
+  :api-key #env "SCOPUS_API_KEY"}}
