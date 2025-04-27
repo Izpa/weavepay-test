@@ -97,13 +97,20 @@ run-docker-persist:
 	@mkdir -p shared
 	docker run -v $(shell pwd)/shared:/app/shared ${DOCKER_RUN_OPTS}
 
+.PHONY: docker-start
+docker-start:
+	docker start ${APP_NAME}
+
 .PHONY: docker-stop
 docker-stop:
 	@docker stop ${APP_NAME} || true
+
+.PHONY: docker-remove
+docker-remove: docker-stop
 	@docker rm ${APP_NAME} || true
 
 .PHONY: docker-clean
-docker-clean: docker-stop
+docker-clean: docker-remove
 	@echo "Cleaning shared volume..."
 	@rm -rf ./shared/*
 	@mkdir -p shared
