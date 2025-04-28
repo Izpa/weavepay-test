@@ -25,7 +25,7 @@
   com.zaxxer/HikariCP {:mvn/version "6.3.0"}
 
   ;config
-  integrant/integrant {:mvn/version "0.8.1"}
+  integrant/integrant {:mvn/version "0.13.1"}
   aero/aero {:mvn/version "1.1.6"}}
 
  :aliases
@@ -108,7 +108,7 @@
    :extra-deps {metosin/reitit {:mvn/version "0.7.0"}
                 metosin/malli {:mvn/version "0.13.0"}
                 metosin/muuntaja {:mvn/version "0.6.8"}
-                integrant/integrant {:mvn/version "0.8.0"}
+                integrant/integrant {:mvn/version "0.13.1"}
                 aero/aero {:mvn/version "1.1.6"}}}
 
   :dev
