@@ -26,7 +26,7 @@
 (defonce system (atom nil))
 
 (defn start-system!
-  []
+  [_]
   (reset! system (start!)))
 
 (defn stop-watch!
@@ -53,7 +53,7 @@
   (server/stop!))
 
 (comment
-  (start-system!)
+  (start-system! nil)
 
   (start-shadow!)
 

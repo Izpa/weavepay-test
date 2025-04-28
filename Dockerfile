@@ -1,14 +1,25 @@
 # --- Stage 1: Build stage ---
-FROM clojure:openjdk-17 AS builder
+FROM eclipse-temurin:21-jdk AS builder
 
+# Install required packages
 RUN apt-get update && \
-    apt-get install -y curl gnupg && \
+    apt-get install -y curl unzip rlwrap gnupg git bash tar && \
     curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
-    apt-get install -y nodejs
+    apt-get install -y nodejs && \
+    rm -rf /var/lib/apt/lists/*
 
+WORKDIR /tmp
+
+# Install latest Clojure CLI (1.12.0.1530)
+RUN curl -L -O https://github.com/clojure/brew-install/releases/latest/download/linux-install.sh && \
+    chmod +x linux-install.sh && \
+    ./linux-install.sh && \
+    rm linux-install.sh
+
+# Prepare application source
 WORKDIR /app
 
-# copy deps & configs
+# Copy dependency configs first
 COPY deps.edn .
 COPY build.clj .
 COPY Makefile .
@@ -16,38 +27,40 @@ COPY shadow-cljs.edn .
 COPY package.json .
 COPY package-lock.json .
 
-# install clojure and npm deps
-RUN clojure -P && npm ci
+# Install deps
+RUN clojure -P
+RUN npm ci
 
-# copy sources
+# Copy sources
 COPY src src
 COPY resources/common resources/common
 
-# clean old JS build if exists
+# Clean previous JS builds if any
 RUN rm -rf resources/common/public/js
 
-# build production frontend
-RUN clojure -M:cljs:cljs-opts release app
+# Build frontend (shadow-cljs)
+RUN clojure -M:cljs:cljs-opts release prod
 
-# build backend uberjar
+# Build backend uberjar
 ARG VERSION=local
 ENV VERSION=$VERSION
 RUN clojure -T:build uber
 
 # --- Stage 2: Final image ---
-FROM openjdk:11
+FROM eclipse-temurin:21-jdk
 
-# set working directory
+# Set workdir
 WORKDIR /app
 
-# create shared folder to persist data
+# Create shared volume
 RUN mkdir -p /app/shared
 
-# copy built artifacts
+# Copy artifacts
 COPY --from=builder /app/target/app.jar app.jar
 COPY --from=builder /app/resources/common/public /app/resources/common/public
 
 ARG VERSION=local
 ENV APP_VERSION=$VERSION
 
+# Run application
 CMD ["java", "-jar", "app.jar"]

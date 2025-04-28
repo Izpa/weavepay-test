@@ -26,7 +26,13 @@
 
   ;config
   integrant/integrant {:mvn/version "0.13.1"}
-  aero/aero {:mvn/version "1.1.6"}}
+  aero/aero {:mvn/version "1.1.6"}
+
+  crypto-equality/crypto-equality {:mvn/version "1.0.1"}}
+
+ :mvn/repos
+ {"central" {:url "https://repo1.maven.org/maven2/"}
+  "clojars" {:url "https://repo.clojars.org/"}}
 
  :aliases
  {:nrepl

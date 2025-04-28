@@ -49,7 +49,7 @@ run-uberjar:
 
 .PHONY: run-dev
 run-dev:
-	clj -M:dev:cljs:test-common:unit-test:integration-test:e2e-test -X user/run-system!
+	clj -X:dev:cljs:test-common:unit-test:integration-test:e2e-test user/start-system!
 
 .PHONY: clj-deps
 clj-deps:
