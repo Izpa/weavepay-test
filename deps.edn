@@ -8,7 +8,7 @@
   metosin/malli {:mvn/version "0.17.0"} ; schema
 
   ;http server
-  http-kit/http-kit {:mvn/version "2.5.1"} ; http
+  http-kit/http-kit {:mvn/version "2.8.0"} ; http
   metosin/reitit {:mvn/version "0.8.0"} ; routing
   metosin/reitit-malli {:mvn/version "0.8.0"}
   ring/ring-defaults {:mvn/version "0.6.0"}
