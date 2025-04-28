@@ -31,7 +31,7 @@
  :aliases
  {:nrepl
   {:extra-deps {nrepl/nrepl {:mvn/version "1.1.0-alpha1"}
-                cider/cider-nrepl {:mvn/version "0.50.2"}
+                cider/cider-nrepl {:mvn/version "0.55.4"}
                 refactor-nrepl/refactor-nrepl {:mvn/version "3.9.0"}
                 thheller/shadow-cljs {:mvn/version "2.25.2"}}
    :main-opts ["-m" "nrepl.cmdline"
