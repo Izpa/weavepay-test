@@ -3,7 +3,7 @@
 
  :deps
  {org.clojure/clojure {:mvn/version "1.12.0"}
-  com.taoensso/timbre {:mvn/version "6.3.1"} ; log
+  com.taoensso/timbre {:mvn/version "6.7.0"} ; log
   org.slf4j/slf4j-simple {:mvn/version "2.0.17"}
   metosin/malli {:mvn/version "0.17.0"} ; schema
 
