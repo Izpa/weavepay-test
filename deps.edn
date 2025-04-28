@@ -105,7 +105,7 @@
   :swagger
   {:main-opts ["-m" "swagger.generator"]
    :extra-paths ["src"]
-   :extra-deps {metosin/reitit {:mvn/version "0.7.0"}
+   :extra-deps {metosin/reitit {:mvn/version "0.8.0"}
                 metosin/malli {:mvn/version "0.17.0"}
                 metosin/muuntaja {:mvn/version "0.6.11"}
                 integrant/integrant {:mvn/version "0.13.1"}
