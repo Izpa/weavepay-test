@@ -3,12 +3,12 @@
 
  :deps
  {org.clojure/clojure {:mvn/version "1.12.0"}
-  com.taoensso/timbre {:mvn/version "6.3.1"} ; log
+  com.taoensso/timbre {:mvn/version "6.7.0"} ; log
   org.slf4j/slf4j-simple {:mvn/version "2.0.17"}
   metosin/malli {:mvn/version "0.17.0"} ; schema
 
   ;http server
-  http-kit/http-kit {:mvn/version "2.5.1"} ; http
+  http-kit/http-kit {:mvn/version "2.8.0"} ; http
   metosin/reitit {:mvn/version "0.8.0"} ; routing
   metosin/reitit-malli {:mvn/version "0.8.0"}
   ring/ring-defaults {:mvn/version "0.6.0"}
@@ -51,7 +51,7 @@
   {:extra-deps {mvxcvi/cljstyle {:mvn/version "0.17.642"}}}
 
   :kondo
-  {:extra-deps {clj-kondo/clj-kondo {:mvn/version "2023.12.15"}}
+  {:extra-deps {clj-kondo/clj-kondo {:mvn/version "2025.04.07"}}
    :main-opts ["-m" "clj-kondo.main" "--lint" "--cache false"]}
 
   :kibit
@@ -86,7 +86,7 @@
 
   :e2e-test
   {:extra-paths ["test/e2e"]
-   :extra-deps {etaoin/etaoin {:mvn/version "1.0.40"}}}
+   :extra-deps {etaoin/etaoin {:mvn/version "1.1.43"}}}
 
   :cljs-opts
   {:main-opts  ["-m" "shadow.cljs.devtools.cli"]
@@ -115,8 +115,8 @@
    {binaryage/devtools {:mvn/version "1.0.7"}
     integrant/repl {:mvn/version "0.4.0"}
     clojure-watch/clojure-watch {:mvn/version "0.1.14"}
-    com.clojure-goes-fast/clj-async-profiler {:mvn/version "1.1.1"}
-    com.gfredericks/test.chuck {:mvn/version "0.2.13"}}
+    com.clojure-goes-fast/clj-async-profiler {:mvn/version "1.6.1"}
+    com.gfredericks/test.chuck {:mvn/version "0.2.15"}}
    :extra-paths ["dev"]
    :exec-fn user/run-system!
    :exec-args {}}}}
