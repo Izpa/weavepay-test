@@ -93,7 +93,7 @@
    :jvm-opts   ["-Xss2m"]}
 
   :cljs
-  {:extra-deps {thheller/shadow-cljs {:mvn/version "3.0.3"}
+  {:extra-deps {thheller/shadow-cljs {:mvn/version "3.0.4"}
                 com.google.javascript/closure-compiler-unshaded {:mvn/version "v20250407"}
                 org.clojure/clojurescript {:mvn/version "1.12.38"}
                 reagent/reagent {:mvn/version "1.3.0"}
