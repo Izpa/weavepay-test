@@ -37,7 +37,7 @@
  {:nrepl
   {:extra-deps {nrepl/nrepl {:mvn/version "1.3.1"}
                 cider/cider-nrepl {:mvn/version "0.55.7"}
-                refactor-nrepl/refactor-nrepl {:mvn/version "3.10.0"}}
+                refactor-nrepl/refactor-nrepl {:mvn/version "3.11.0"}}
    :main-opts ["-m" "nrepl.cmdline"
                "--middleware" "[shadow.cljs.devtools.server.nrepl/middleware cider.nrepl/cider-middleware refactor-nrepl.middleware/wrap-refactor]"]}
 
