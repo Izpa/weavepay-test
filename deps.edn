@@ -5,7 +5,7 @@
  {org.clojure/clojure {:mvn/version "1.12.0"}
   com.taoensso/timbre {:mvn/version "6.8.0"} ; log
   org.slf4j/slf4j-simple {:mvn/version "2.0.17"}
-  metosin/malli {:mvn/version "0.17.0"} ; schema
+  metosin/malli {:mvn/version "0.19.1"} ; schema
 
   ;http server
   http-kit/http-kit {:mvn/version "2.8.1"} ; http
