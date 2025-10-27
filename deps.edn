@@ -9,7 +9,7 @@
 
   ;http server
   http-kit/http-kit {:mvn/version "2.8.1"} ; http
-  metosin/reitit {:mvn/version "0.8.0"} ; routing
+  metosin/reitit {:mvn/version "0.9.1"} ; routing
   metosin/reitit-malli {:mvn/version "0.8.0"}
   ring/ring-defaults {:mvn/version "0.6.0"}
   metosin/muuntaja {:mvn/version "0.6.11"}
