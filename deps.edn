@@ -4,7 +4,7 @@
  :deps
  {org.clojure/clojure {:mvn/version "1.12.5"}
   com.taoensso/timbre {:mvn/version "6.8.0"} ; log
-  org.slf4j/slf4j-simple {:mvn/version "2.0.17"}
+  org.slf4j/slf4j-simple {:mvn/version "2.0.18"}
   metosin/malli {:mvn/version "0.20.1"} ; schema
 
   ;http server
