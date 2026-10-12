@@ -12,7 +12,7 @@
   metosin/reitit {:mvn/version "0.8.0"} ; routing
   metosin/reitit-malli {:mvn/version "0.8.0"}
   ring/ring-defaults {:mvn/version "0.6.0"}
-  metosin/muuntaja {:mvn/version "0.6.11"}
+  metosin/muuntaja {:mvn/version "0.6.12"}
 
   cheshire/cheshire {:mvn/version "6.2.0"} ; json encoding
   clj-http/clj-http {:mvn/version "3.13.1"} ; http client
